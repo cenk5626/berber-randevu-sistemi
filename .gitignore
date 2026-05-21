@@ -8,3 +8,4 @@ whatsapp-bot/chrome_session/
 whatsapp-bot/venv/
 *.log
 .DS_Store
+backend/node_modules/
