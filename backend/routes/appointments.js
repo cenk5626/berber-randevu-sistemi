@@ -120,10 +120,15 @@ router.post('/', async (req, res) => {
 
     const newAppointment = await getAsync('SELECT * FROM appointments WHERE id = ?', [result.lastID])
 
+    console.log('Randevu olusturuldu. WhatsApp kontrol ediliyor...')
+    console.log('whatsapp_enabled:', settings.whatsapp_enabled, 'isWhatsAppReady:', isWhatsAppReady())
+
     if (settings.whatsapp_enabled === 1 && isWhatsAppReady()) {
       const services = await allAsync('SELECT * FROM services WHERE name = ?', [service_type])
       const price = services.length > 0 ? services[0].price : 0
       const message = `Sayın ${customer_name}, ${appointment_date} ${getGunAdi(appointment_date)} günü saat ${appointment_time}'de ${service_type} randevunuz bulunmaktadır. Ücreti ${price}₺'dir. Randevu saatinizde dükkanımızda bulununuz. İptal veya değişiklik için bizimle iletişime geçiniz.`
+      
+      console.log('Otomatik mesaj gonderiliyor:', customer_phone)
       sendWhatsAppMessage(customer_phone, message).then(result => {
         if (result.success) {
           console.log('WhatsApp otomatik mesaj gonderildi:', customer_phone)
@@ -131,6 +136,8 @@ router.post('/', async (req, res) => {
           console.log('WhatsApp otomatik mesaj gonderilemedi:', result.message)
         }
       })
+    } else {
+      console.log('Otomatik mesaj gonderilmedi. Enabled:', settings.whatsapp_enabled, 'Ready:', isWhatsAppReady())
     }
 
     res.status(201).json({ success: true, data: newAppointment })
