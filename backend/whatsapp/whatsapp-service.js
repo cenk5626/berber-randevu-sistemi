@@ -1,8 +1,10 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
-const qrcode = require('qrcode-terminal')
+const QRCode = require('qrcode')
 
 let client = null
 let isReady = false
+let currentQR = null
+let qrImageData = null
 
 function getWhatsAppClient() {
   if (client) return client
@@ -11,6 +13,14 @@ function getWhatsAppClient() {
 
 function isWhatsAppReady() {
   return isReady
+}
+
+function getCurrentQR() {
+  return currentQR
+}
+
+function getQRImage() {
+  return qrImageData
 }
 
 function initWhatsApp() {
@@ -24,14 +34,17 @@ function initWhatsApp() {
     }
   })
 
-  client.on('qr', (qr) => {
-    console.log('WhatsApp QR Kodu - Telefonunuzdan tarayin:')
-    qrcode.generate(qr, { small: true })
+  client.on('qr', async (qr) => {
+    currentQR = qr
+    qrImageData = await QRCode.toDataURL(qr)
+    console.log('WhatsApp QR Kodu olusturuldu. /api/whatsapp/qr adresinden goruntuleyin.')
   })
 
   client.on('ready', () => {
     console.log('WhatsApp baglantisi hazir!')
     isReady = true
+    currentQR = null
+    qrImageData = null
   })
 
   client.on('disconnected', (reason) => {
@@ -71,5 +84,7 @@ module.exports = {
   initWhatsApp,
   getWhatsAppClient,
   isWhatsAppReady,
-  sendWhatsAppMessage
+  sendWhatsAppMessage,
+  getCurrentQR,
+  getQRImage
 }
