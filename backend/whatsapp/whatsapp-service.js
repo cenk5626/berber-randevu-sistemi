@@ -63,19 +63,28 @@ function initWhatsApp() {
 
 async function sendWhatsAppMessage(phone, message) {
   if (!client || !isReady) {
+    console.log('WhatsApp send: Client veya ready degil')
     return { success: false, message: 'WhatsApp hazir degil' }
   }
 
   try {
+    console.log('WhatsApp send basliyor:', { phone, messageLength: message.length })
+    
     let cleanPhone = phone.replace('+', '').replace(/\s/g, '').replace('-', '')
     if (cleanPhone.startsWith('0')) {
       cleanPhone = '90' + cleanPhone.substring(1)
     }
     const chatId = `${cleanPhone}@c.us`
+    console.log('Chat ID:', chatId)
+    
+    const chat = await client.getChatById(chatId)
+    console.log('Chat bulundu:', !!chat)
+    
     await client.sendMessage(chatId, message)
+    console.log('Mesaj gonderildi basarili')
     return { success: true, message: 'Mesaj gonderildi' }
   } catch (error) {
-    console.error('WhatsApp mesaj hatasi:', error.message)
+    console.error('WhatsApp mesaj hatasi:', error.message, error.stack)
     return { success: false, message: error.message }
   }
 }

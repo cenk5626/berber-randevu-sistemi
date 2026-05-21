@@ -79,4 +79,23 @@ router.get('/qr-page', (req, res) => {
   `)
 })
 
+router.get('/test', async (req, res) => {
+  try {
+    const { sendWhatsAppMessage, isWhatsAppReady } = require('../whatsapp/whatsapp-service')
+    
+    if (!isWhatsAppReady()) {
+      return res.json({ success: false, message: 'WhatsApp hazir degil' })
+    }
+    
+    console.log('WhatsApp test basliyor...')
+    const result = await sendWhatsAppMessage('+905352006262', 'Test mesaji - sistem calisiyor')
+    console.log('WhatsApp test sonucu:', result)
+    
+    res.json(result)
+  } catch (error) {
+    console.error('WhatsApp test hatasi:', error)
+    res.status(500).json({ success: false, message: error.message })
+  }
+})
+
 module.exports = router
