@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
+const path = require('path')
 const { initDatabase, getAsync, runAsync } = require('./db/database')
 const { initWhatsApp, isWhatsAppReady } = require('./whatsapp/whatsapp-service')
 
@@ -19,6 +20,21 @@ app.use('/api/appointments', appointmentsRouter)
 app.use('/api/services', servicesRouter)
 app.use('/api/settings', settingsRouter)
 app.use('/api/whatsapp', whatsappRouter)
+
+const frontendPath = path.join(__dirname, '..', 'frontend')
+app.use(express.static(frontendPath))
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'admin', 'login.html'))
+})
+
+app.get('/admin/*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'admin', req.path.replace('/admin/', '')))
+})
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'))
+})
 
 const defaultServices = [
   { name: 'Sac Trasi', price: 150, duration_minutes: 30 },
