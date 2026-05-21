@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Giriş - Berber Randevu Sistemi</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <h1>Berber Yönetim Paneli</h1>
+            <p class="login-subtitle">Devam etmek için şifrenizi girin</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Şifre</label>
+                    <input type="password" id="password" name="password" placeholder="Şifrenizi girin" required>
+                </div>
+                <div id="loginError" class="error-message" style="display: none;"></div>
+                <button type="submit" class="btn btn-primary btn-block">Giriş Yap</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            if (password === 'admin123') {
+                localStorage.setItem('adminSession', 'true');
+                localStorage.setItem('adminLoginTime', new Date().toISOString());
+                window.location.href = 'index.html';
+            } else {
+                loginError.textContent = 'Hatalı şifre!';
+                loginError.style.display = 'block';
+            }
+        });
+        if (localStorage.getItem('adminSession') === 'true') {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

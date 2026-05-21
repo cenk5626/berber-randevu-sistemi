@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berber Randevu Sistemi</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#hero" class="nav-logo">
+                <span class="barber-pole-icon"></span>
+                <span id="nav-berber-adi">Berber</span>
+            </a>
+            <button class="nav-toggle" aria-label="Menüyü aç/kapat">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-menu">
+                <a href="#hero" class="nav-link">Ana Sayfa</a>
+                <a href="#hakkimizda" class="nav-link">Hakkımızda</a>
+                <a href="#hizmetler" class="nav-link">Hizmetler</a>
+                <a href="#galeri" class="nav-link">Galeri</a>
+                <a href="#iletisim" class="nav-link">İletişim</a>
+                <button class="btn btn-gold btn-randevu-nav" id="randevu-ac-btn">Randevu Al</button>
+            </div>
+        </div>
+    </nav>
+
+    <section id="hero" class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <h1 class="hero-title" id="hero-baslik">Tarzınızı Bizimle Yansıtın</h1>
+            <p class="hero-subtitle" id="hero-alt-baslik">Profesyonel dokunuşlar, modern kesimler</p>
+            <button class="btn btn-gold btn-hero" id="hero-randevu-btn">Hemen Randevu Al</button>
+        </div>
+        <div class="barber-pole-left"></div>
+        <div class="barber-pole-right"></div>
+    </section>
+
+    <section id="hakkimizda" class="section hakkimizda">
+        <div class="container">
+            <h2 class="section-title">Hakkımızda</h2>
+            <div class="hakkimizda-content">
+                <div class="hakkimizda-image">
+                    <div class="image-placeholder">
+                        <span class="placeholder-icon">✂</span>
+                    </div>
+                </div>
+                <div class="hakkimizda-text">
+                    <p id="hakkimizda-aciklama">Yılların deneyimi ve profesyonel ekibimizle sizlere en kaliteli berber hizmetini sunuyoruz. Modern teknikler ve geleneksel ustalığı bir araya getirerek, her müşterimize özel bir deneyim yaşatıyoruz.</p>
+                    <div class="hakkimizda-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="stat-yil">10+</span>
+                            <span class="stat-label">Yıllık Deneyim</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="stat-musteri">5000+</span>
+                            <span class="stat-label">Mutlu Müşteri</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="stat-hizmet">15+</span>
+                            <span class="stat-label">Hizmet Çeşidi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="hizmetler" class="section hizmetler">
+        <div class="container">
+            <h2 class="section-title">Hizmetlerimiz</h2>
+            <div class="hizmetler-grid" id="hizmetler-listesi">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Hizmetler yükleniyor...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="galeri" class="section galeri">
+        <div class="container">
+            <h2 class="section-title">Galeri</h2>
+            <div class="galeri-grid">
+                <div class="galeri-item"><div class="galeri-placeholder"><span>1</span></div></div>
+                <div class="galeri-item"><div class="galeri-placeholder"><span>2</span></div></div>
+                <div class="galeri-item"><div class="galeri-placeholder"><span>3</span></div></div>
+                <div class="galeri-item"><div class="galeri-placeholder"><span>4</span></div></div>
+                <div class="galeri-item"><div class="galeri-placeholder"><span>5</span></div></div>
+                <div class="galeri-item"><div class="galeri-placeholder"><span>6</span></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="iletisim" class="section iletisim">
+        <div class="container">
+            <h2 class="section-title">İletişim</h2>
+            <div class="iletisim-content">
+                <div class="iletisim-info">
+                    <div class="info-item">
+                        <span class="info-icon">&#128205;</span>
+                        <div>
+                            <h3>Adres</h3>
+                            <p id="iletisim-adres">Yükleniyor...</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">&#128222;</span>
+                        <div>
+                            <h3>Telefon</h3>
+                            <p id="iletisim-telefon">Yükleniyor...</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">&#128337;</span>
+                        <div>
+                            <h3>Çalışma Saatleri</h3>
+                            <p id="iletisim-saatler">Yükleniyor...</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">&#9993;</span>
+                        <div>
+                            <h3>E-posta</h3>
+                            <p id="iletisim-email">Yükleniyor...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="iletisim-harita">
+                    <div class="harita-placeholder">
+                        <span>Harita Alanı</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="barber-pole-icon"></span>
+                    <span id="footer-berber-adi">Berber</span>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-link" aria-label="Instagram">Instagram</a>
+                    <a href="#" class="social-link" aria-label="Facebook">Facebook</a>
+                    <a href="#" class="social-link" aria-label="Twitter">Twitter</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="footer-yil"></span> <span id="footer-berber-adi-alt">Berber</span>. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal-overlay" id="randevu-modal">
+        <div class="modal">
+            <button class="modal-close" id="modal-kapat">&times;</button>
+            <h2 class="modal-title">Randevu Al</h2>
+            <form id="randevu-form" class="randevu-form">
+                <div class="form-group">
+                    <label for="ad-soyad">Ad Soyad *</label>
+                    <input type="text" id="ad-soyad" name="adSoyad" required placeholder="Adınız ve soyadınız">
+                </div>
+                <div class="form-group">
+                    <label for="telefon">Telefon *</label>
+                    <input type="tel" id="telefon" name="telefon" required placeholder="05XX XXX XX XX" pattern="[0-9\s\-\+\(\)]{10,15}">
+                </div>
+                <div class="form-group">
+                    <label for="email">E-posta</label>
+                    <input type="email" id="email" name="email" placeholder="ornek@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="hizmet">Hizmet Seçimi *</label>
+                    <select id="hizmet" name="hizmetId" required>
+                        <option value="">Hizmet seçiniz...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tarih">Tarih *</label>
+                    <input type="date" id="tarih" name="tarih" required>
+                </div>
+                <div class="form-group" id="saat-grubu" style="display:none;">
+                    <label>Müsait Saatler *</label>
+                    <div class="saat-slotlari" id="saat-slotlari">
+                        <div class="loading-spinner-small">
+                            <div class="spinner-small"></div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="saat" name="saat" required>
+                </div>
+                <button type="submit" class="btn btn-gold btn-submit" id="form-gonder-btn">Randevu Oluştur</button>
+            </form>
+            <div class="form-mesaj" id="form-mesaj"></div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

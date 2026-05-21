@@ -1,0 +1,10 @@
+node_modules/
+.env
+whatsapp-session/
+*.db
+*.db-shm
+*.db-wal
+whatsapp-bot/chrome_session/
+whatsapp-bot/venv/
+*.log
+.DS_Store
