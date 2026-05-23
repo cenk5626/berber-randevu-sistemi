@@ -120,12 +120,10 @@ router.post('/', async (req, res) => {
 
     const newAppointment = await getAsync('SELECT * FROM appointments WHERE id = ?', [result.lastID])
 
-    if (settings.whatsapp_enabled === 1) {
-      const services = await allAsync('SELECT * FROM services WHERE name = ?', [service_type])
-      const price = services.length > 0 ? services[0].price : 0
-      const message = `Sayın ${customer_name}, ${appointment_date} ${getGunAdi(appointment_date)} günü saat ${appointment_time}'de ${service_type} randevunuz bulunmaktadır. Ücreti ${price}₺'dir. Randevu saatinizde dükkanımızda bulununuz. İptal veya değişiklik için bizimle iletişime geçiniz.`
-      sendWhatsAppMessage(customer_phone, message).catch(() => {})
-    }
+    const services = await allAsync('SELECT * FROM services WHERE name = ?', [service_type])
+    const price = services.length > 0 ? services[0].price : 0
+    const message = `Sayın ${customer_name}, ${appointment_date} ${getGunAdi(appointment_date)} günü saat ${appointment_time}'de ${service_type} randevunuz bulunmaktadır. Ücreti ${price}₺'dir. Randevu saatinizde dükkanımızda bulununuz. İptal veya değişiklik için bizimle iletişime geçiniz.`
+    sendWhatsAppMessage(customer_phone, message)
 
     res.status(201).json({ success: true, data: newAppointment })
   } catch (error) {

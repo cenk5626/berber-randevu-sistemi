@@ -63,7 +63,7 @@ const insertDefaultSettings = async () => {
     await runAsync(
       `INSERT INTO settings (shop_name, shop_phone, shop_address, whatsapp_enabled, working_hours_start, working_hours_end, slot_duration)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      ['Berber Dukkani', '+905551234567', 'Ornek Mah. Ornek Cad. No:1', 0, '09:00', '18:00', 30]
+      ['Berber Dukkani', '+905551234567', 'Ornek Mah. Ornek Cad. No:1', 1, '09:00', '18:00', 30]
     )
   }
 }
