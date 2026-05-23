@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { getAsync, runAsync, allAsync } = require('../db/database')
-const { sendWhatsAppMessage, isWhatsAppReady } = require('../whatsapp/whatsapp-service')
+const { sendWhatsAppMessage } = require('../whatsapp/whatsapp-service')
 
 const gunler = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi']
 
@@ -124,7 +124,7 @@ router.post('/', async (req, res) => {
       const services = await allAsync('SELECT * FROM services WHERE name = ?', [service_type])
       const price = services.length > 0 ? services[0].price : 0
       const message = `Sayın ${customer_name}, ${appointment_date} ${getGunAdi(appointment_date)} günü saat ${appointment_time}'de ${service_type} randevunuz bulunmaktadır. Ücreti ${price}₺'dir. Randevu saatinizde dükkanımızda bulununuz. İptal veya değişiklik için bizimle iletişime geçiniz.`
-      sendWhatsAppMessage(customer_phone, message)
+      sendWhatsAppMessage(customer_phone, message).catch(() => {})
     }
 
     res.status(201).json({ success: true, data: newAppointment })

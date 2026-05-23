@@ -1,15 +1,12 @@
-const { Client, LocalAuth } = require('whatsapp-web.js')
+const { makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys')
 const QRCode = require('qrcode')
+const path = require('path')
+const fs = require('fs')
 
-let client = null
+let sock = null
 let isReady = false
 let currentQR = null
 let qrImageData = null
-
-function getWhatsAppClient() {
-  if (client) return client
-  return null
-}
 
 function isWhatsAppReady() {
   return isReady
@@ -24,99 +21,89 @@ function getQRImage() {
 }
 
 function initWhatsApp() {
-  const puppeteerOptions = {
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']
+  const sessionDir = path.join(__dirname, '..', 'whatsapp-session')
+  if (!fs.existsSync(sessionDir)) {
+    fs.mkdirSync(sessionDir, { recursive: true })
   }
 
-  const chromiumPath = process.env.CHROME_PATH || '/usr/bin/chromium'
-  const fs = require('fs')
-  if (fs.existsSync(chromiumPath)) {
-    puppeteerOptions.executablePath = chromiumPath
-    console.log('Chromium bulundu:', chromiumPath)
-  } else {
-    console.log('Chromium bulunamadi, varsayilan kullanilacak')
-  }
+  const startSock = async () => {
+    const { state, saveCreds } = await useMultiFileAuthState(sessionDir)
 
-  client = new Client({
-    authStrategy: new LocalAuth({
-      dataPath: './whatsapp-session'
-    }),
-    puppeteer: puppeteerOptions
-  })
+    sock = makeWASocket({
+      auth: state,
+      printQRInTerminal: false,
+      syncFullHistory: false,
+      connectTimeoutMs: 60000,
+      keepAliveIntervalMs: 30000,
+      emitOwnEvents: false
+    })
 
-  client.on('qr', async (qr) => {
-    currentQR = qr
-    qrImageData = await QRCode.toDataURL(qr)
-    console.log('WhatsApp QR Kodu olusturuldu.')
-  })
+    sock.ev.on('creds.update', saveCreds)
 
-  client.on('ready', () => {
-    console.log('WhatsApp baglantisi hazir!')
-    isReady = true
-    currentQR = null
-    qrImageData = null
-  })
+    sock.ev.on('connection.update', async (update) => {
+      const { connection, lastDisconnect, qr } = update
 
-  client.on('disconnected', async (reason) => {
-    console.log('WhatsApp baglantisi kesildi:', reason)
-    isReady = false
-    currentQR = null
-    qrImageData = null
-    console.log('WhatsApp yeniden baglaniyor...')
-    setTimeout(() => {
-      try {
-        client.initialize()
-      } catch (e) {
-        console.error('Yeniden baglanma hatasi:', e.message)
+      if (qr) {
+        currentQR = qr
+        qrImageData = await QRCode.toDataURL(qr)
+        console.log('WhatsApp QR kodu olusturuldu')
       }
-    }, 5000)
-  })
 
-  client.on('auth_failure', (msg) => {
-    console.log('WhatsApp kimlik dogrulama hatasi:', msg)
-    isReady = false
-  })
+      if (connection === 'open') {
+        console.log('WhatsApp baglantisi basarili!')
+        isReady = true
+        currentQR = null
+        qrImageData = null
+      }
 
-  client.initialize()
-  return client
+      if (connection === 'close') {
+        const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut
+        console.log('WhatsApp baglantisi kapandi. Yeniden baglaniyor:', shouldReconnect)
+        isReady = false
+        if (shouldReconnect) {
+          setTimeout(startSock, 5000)
+        }
+      }
+    })
+  }
+
+  startSock()
+  return sock
 }
 
 async function sendWhatsAppMessage(phone, message) {
-  if (!client || !isReady) {
-    console.log('WhatsApp send: Client veya ready degil')
-    return { success: false, message: 'WhatsApp hazir degil' }
-  }
+  try {
+    let cleanPhone = phone.replace('+', '').replace(/\s/g, '').replace('-', '')
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '90' + cleanPhone.substring(1)
+    }
+    const jid = `${cleanPhone}@s.whatsapp.net`
 
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      console.log(`WhatsApp send deneme ${attempt}:`, { phone, messageLength: message.length })
-      
-      let cleanPhone = phone.replace('+', '').replace(/\s/g, '').replace('-', '')
-      if (cleanPhone.startsWith('0')) {
-        cleanPhone = '90' + cleanPhone.substring(1)
-      }
-      const chatId = `${cleanPhone}@c.us`
-      console.log('Chat ID:', chatId)
-      
-      await client.sendMessage(chatId, message)
-      console.log('Mesaj gonderildi basarili')
-      return { success: true, message: 'Mesaj gonderildi' }
-    } catch (error) {
-      console.error(`WhatsApp mesaj hatasi (deneme ${attempt}):`, error.message)
-      if (attempt < 3) {
-        console.log('5 saniye bekleniyor...')
-        await new Promise(resolve => setTimeout(resolve, 5000))
+    if (!sock) {
+      return { success: false, message: 'WhatsApp baglantisi yok' }
+    }
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await sock.sendMessage(jid, { text: message })
+        return { success: true, message: 'Mesaj gonderildi' }
+      } catch (error) {
+        console.error(`WhatsApp hata (deneme ${attempt}):`, error.message)
+        if (attempt < 3) {
+          await new Promise(r => setTimeout(r, 3000))
+        }
       }
     }
+
+    return { success: false, message: '3 deneme basarisiz' }
+  } catch (error) {
+    console.error('WhatsApp send hatasi:', error.message)
+    return { success: false, message: error.message }
   }
-  
-  return { success: false, message: 'Mesaj gonderilemedi, 3 deneme basarisiz' }
 }
 
 module.exports = {
   initWhatsApp,
-  getWhatsAppClient,
   isWhatsAppReady,
   sendWhatsAppMessage,
   getCurrentQR,
