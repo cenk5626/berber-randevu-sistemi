@@ -26,7 +26,7 @@ function initWhatsApp() {
     fs.mkdirSync(sessionDir, { recursive: true })
   }
 
-  const startSock = async () => {
+  const startSock = async (forceNew) => {
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir)
 
     sock = makeWASocket({
@@ -34,8 +34,9 @@ function initWhatsApp() {
       printQRInTerminal: false,
       syncFullHistory: false,
       connectTimeoutMs: 60000,
-      keepAliveIntervalMs: 30000,
-      emitOwnEvents: false
+      keepAliveIntervalMs: 15000,
+      emitOwnEvents: false,
+      markOnlineOnConnect: false
     })
 
     sock.ev.on('creds.update', saveCreds)
@@ -47,6 +48,7 @@ function initWhatsApp() {
         currentQR = qr
         qrImageData = await QRCode.toDataURL(qr)
         console.log('WhatsApp QR kodu olusturuldu')
+        isReady = false
       }
 
       if (connection === 'open') {
@@ -57,18 +59,36 @@ function initWhatsApp() {
       }
 
       if (connection === 'close') {
-        const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut
-        console.log('WhatsApp baglantisi kapandi. Yeniden baglaniyor:', shouldReconnect)
+        const statusCode = lastDisconnect?.error?.output?.statusCode
+        const isLoggedOut = statusCode === DisconnectReason.loggedOut
+        console.log('WhatsApp baglantisi kapandi. loggedOut:', isLoggedOut)
         isReady = false
-        if (shouldReconnect) {
-          setTimeout(startSock, 5000)
+        if (isLoggedOut) {
+          currentQR = null
+          qrImageData = null
+          const SessionDir = path.join(__dirname, '..', 'whatsapp-session')
+          if (fs.existsSync(SessionDir)) {
+            fs.rmSync(SessionDir, { recursive: true, force: true })
+          }
         }
+        setTimeout(() => startSock(), 3000)
       }
     })
   }
 
   startSock()
   return sock
+}
+
+async function forceReconnect() {
+  const SessionDir = path.join(__dirname, '..', 'whatsapp-session')
+  if (fs.existsSync(SessionDir)) {
+    fs.rmSync(SessionDir, { recursive: true, force: true })
+  }
+  isReady = false
+  currentQR = null
+  qrImageData = null
+  setTimeout(() => initWhatsApp(), 1000)
 }
 
 async function sendWhatsAppMessage(phone, message) {
@@ -107,5 +127,6 @@ module.exports = {
   isWhatsAppReady,
   sendWhatsAppMessage,
   getCurrentQR,
-  getQRImage
+  getQRImage,
+  forceReconnect
 }
